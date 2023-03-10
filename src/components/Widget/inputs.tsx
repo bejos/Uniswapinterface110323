@@ -32,12 +32,20 @@ export function useSyncWidgetInputs({
 }) {
   const trace = useTrace({ section: InterfaceSectionName.WIDGET })
 
+  const previousDefaultTokens = usePrevious(defaultTokens)
+
   const { chainId } = useWeb3React()
   const previousChainId = usePrevious(chainId)
 
   const [type, setType] = useState<SwapValue['type']>(TradeType.EXACT_INPUT)
   const [amount, setAmount] = useState<SwapValue['amount']>(EMPTY_AMOUNT)
   const [tokens, setTokens] = useState<SwapTokens>(defaultTokens)
+
+  useEffect(() => {
+    if (previousDefaultTokens !== defaultTokens) {
+      setTokens(defaultTokens)
+    }
+  }, [defaultTokens, previousDefaultTokens])
 
   useEffect(() => {
     if (!tokens[Field.INPUT] && !tokens[Field.OUTPUT]) {
